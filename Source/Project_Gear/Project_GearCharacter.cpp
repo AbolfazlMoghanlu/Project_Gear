@@ -95,6 +95,9 @@ void AProject_GearCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 void AProject_GearCharacter::Move(const FInputActionValue& Value)
 {
+	if(IsDriving())
+		return;
+
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -128,3 +131,8 @@ void AProject_GearCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+
+//bool AProject_GearCharacter::IsDriving()
+//{
+//	return false;
+//}
