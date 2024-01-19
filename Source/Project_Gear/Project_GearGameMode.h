@@ -13,6 +13,9 @@ class AProject_GearGameMode : public AGameModeBase
 
 public:
 	AProject_GearGameMode();
+
+	UFUNCTION(BlueprintCallable)
+	void Travel();
 };
 
 

@@ -3,6 +3,7 @@
 #include "Project_GearGameMode.h"
 #include "Project_GearCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 AProject_GearGameMode::AProject_GearGameMode()
 {
@@ -12,4 +13,20 @@ AProject_GearGameMode::AProject_GearGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	bUseSeamlessTravel = true;
+
+#if WITH_EDITOR
+#else
+	#if UE_SERVER 
+		Travel();
+	#else
+		UGameplayStatics::OpenLevel(GetWorld(), "46.249.100.99:7777");
+	#endif
+#endif
+}
+
+void AProject_GearGameMode::Travel()
+{
+	GetWorld()->ServerTravel("ThirdPersonMap");
 }
