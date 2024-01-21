@@ -56,12 +56,9 @@ void UBulletWheel::ApplyForces()
 {
 	if (OwningVehicle && OwningVehicle->RigidBody)
 	{
-		//OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(UpForce), BulletHelpers::ToBtPos(GetComponentLocation(), FVector::ZeroVector));
-		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(FVector::UpVector * OwningVehicle->Force), BulletHelpers::ToBtPos(GetComponentLocation(), FVector::ZeroVector));
+		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(UpForce), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
 
 		DrawDebugLine(GetWorld(), GetComponentLocation(), GetComponentLocation() + UpForce, FColor::Blue);
-
-		DrawDebugSphere(GetWorld(), BulletHelpers::ToUEPos(OwningVehicle->RigidBody->getCenterOfMassPosition(), FVector::ZeroVector), 20, 32, FColor::Black);
 	}
 }
 

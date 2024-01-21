@@ -159,7 +159,8 @@ void UBulletWorld::AddSimulatedDynamicActor(ABulletActor* Actor)
 
 void UBulletWorld::StepSimulation(float DeltaTime, float Frequency)
 {
-	BtWorld->stepSimulation(DeltaTime, DeltaTime / Frequency, Frequency);
+	//BtWorld->stepSimulation(DeltaTime, DeltaTime / Frequency, Frequency);
+	BtWorld->stepSimulation(DeltaTime, 10, Frequency);
 
 #if WITH_EDITORONLY_DATA
 	if (bShowDebug)

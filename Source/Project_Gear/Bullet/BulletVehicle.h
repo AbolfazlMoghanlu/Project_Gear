@@ -39,8 +39,5 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UBulletWheel* Wheel_RR;
 
-	UPROPERTY(EditAnywhere)
-	float Force = 10;
-
 	friend class UBulletWheel;
 };
