@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Bullet/BulletActor.h"
+#include "Bullet/BulletWheel.h"
 #include "BulletVehicle.generated.h"
 
 /**
@@ -27,5 +28,19 @@ protected:
 	UStaticMeshComponent* VehicleBody;
 
 	UPROPERTY(EditAnywhere)
+	UBulletWheel* Wheel_FL;
+
+	UPROPERTY(EditAnywhere)
+	UBulletWheel* Wheel_FR;
+
+	UPROPERTY(EditAnywhere)
+	UBulletWheel* Wheel_RL;
+
+	UPROPERTY(EditAnywhere)
+	UBulletWheel* Wheel_RR;
+
+	UPROPERTY(EditAnywhere)
 	float Force = 10;
+
+	friend class UBulletWheel;
 };

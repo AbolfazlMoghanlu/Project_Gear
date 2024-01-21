@@ -11,6 +11,18 @@ ABulletVehicle::ABulletVehicle()
 {
 	VehicleBody = CreateDefaultSubobject<UStaticMeshComponent>(FName("VehicleBody"));
 	SetRootComponent(VehicleBody);
+
+	Wheel_FL = CreateDefaultSubobject<UBulletWheel>(FName("Wheel_FL"));
+	Wheel_FL->SetupAttachment(VehicleBody);
+	
+	Wheel_FR = CreateDefaultSubobject<UBulletWheel>(FName("Wheel_FR"));
+	Wheel_FR->SetupAttachment(VehicleBody);
+
+	Wheel_RL = CreateDefaultSubobject<UBulletWheel>(FName("Wheel_RL"));
+	Wheel_RL->SetupAttachment(VehicleBody);
+
+	Wheel_RR = CreateDefaultSubobject<UBulletWheel>(FName("Wheel_RR"));
+	Wheel_RR->SetupAttachment(VehicleBody);
 }
 
 void ABulletVehicle::Tick(float DeltaTime)
@@ -19,21 +31,21 @@ void ABulletVehicle::Tick(float DeltaTime)
 
 	if (RigidBody)
 	{
-		RigidBody->applyCentralForce(BulletHelpers::ToBtDir(FVector(0, 0, Force)));
+		//RigidBody->applyCentralForce(BulletHelpers::ToBtDir(FVector(0, 0, Force)));
 
 		FVector Start = GetActorLocation();
 		FVector End = Start + (GetActorUpVector() * -50);
 
 		BulletRayResult Result = ABulletManager::Get()->Ray(Start, End);
 
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red);
-
-		if (Result.bHit)
-		{
-			DrawDebugSphere(GetWorld(), Result.Location, 5, 32, FColor::Green);
-		}
-
-		UE_LOG(LogTemp, Log, TEXT("Ray from %s to %s has hit in %s"), *Start.ToString(), *End.ToString(), *Result.Location.ToString());
+// 		DrawDebugLine(GetWorld(), Start, End, FColor::Red);
+// 
+// 		if (Result.bHit)
+// 		{
+// 			DrawDebugSphere(GetWorld(), Result.Location, 5, 32, FColor::Green);
+// 		}
+// 
+// 		UE_LOG(LogTemp, Log, TEXT("Ray from %s to %s has hit in %s"), *Start.ToString(), *End.ToString(), *Result.Location.ToString());
 	}
 }
 

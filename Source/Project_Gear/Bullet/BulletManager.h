@@ -21,7 +21,7 @@ public:
 
 	void AddSimulatedActor(ABulletActor* Actor);
 
-	BulletRayResult Ray(FVector Start, FVector End, bool bSingle = true);
+	BulletRayResult Ray(FVector Start, FVector End, bool bSingle = true, bool bDrawDebug = true);
 
 	UPROPERTY(EditAnywhere)
 	bool bShowDebug = false;

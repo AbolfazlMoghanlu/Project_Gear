@@ -5,9 +5,11 @@
 #include "Bullet/BulletMotionState.h"
 #include "Bullet/BulletHelper.h"
 #include "Bullet/BulletDebugDraw.h"
+#include "Bullet/BulletManager.h"
 
 #include "Components/ShapeComponent.h"
 #include "PhysicsEngine/BodySetup.h"
+#include "DrawDebugHelpers.h"
 
 UBulletWorld* UBulletWorld::BulletWorld;
 
@@ -368,7 +370,7 @@ btCollisionShape* UBulletWorld::GetConvexHullCollisionShape(UBodySetup* BodySetu
 	return C;
 }
 
-BulletRayResult UBulletWorld::Ray(FVector Start, FVector End, bool bSingle /*= true*/)
+BulletRayResult UBulletWorld::Ray(FVector Start, FVector End, bool bSingle /*= true*/, bool bDrawDebug /*= true*/)
 {
 	BulletRayResult Result;
 
@@ -382,6 +384,16 @@ BulletRayResult UBulletWorld::Ray(FVector Start, FVector End, bool bSingle /*= t
 
 		Result.bHit = RayCallback.hasHit();
 		Result.Location = BulletHelpers::ToUEPos(RayCallback.m_hitPointWorld, FVector::ZeroVector);
+	}
+
+	if (bDrawDebug)
+	{
+		DrawDebugLine(ABulletManager::Get()->GetWorld(), Start, End, FColor::Red);
+
+		if (Result.bHit)
+		{
+			DrawDebugSphere(ABulletManager::Get()->GetWorld(), Result.Location, 5, 32, FColor::Green);
+		}
 	}
 
 	return Result;

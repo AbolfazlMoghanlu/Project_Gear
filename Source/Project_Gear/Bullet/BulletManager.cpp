@@ -28,9 +28,9 @@ void ABulletManager::AddSimulatedActor(ABulletActor* Actor)
 	UBulletWorld::Get()->AddSimulatedActor(Actor);
 }
 
-BulletRayResult ABulletManager::Ray(FVector Start, FVector End, bool bSingle /*= true*/)
+BulletRayResult ABulletManager::Ray(FVector Start, FVector End, bool bSingle /*= true*/, bool bDrawDebug /*= true*/)
 {
-	return UBulletWorld::Get()->Ray(Start, End);
+	return UBulletWorld::Get()->Ray(Start, End, bDrawDebug);
 }
 
 void ABulletManager::BeginPlay()
