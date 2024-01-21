@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "BulletActor.generated.h"
 
+UENUM()
+enum class EBulletPhysicSimMode : uint8
+{
+	Ignore,
+	Static,
+	Dynamic
+};
+
 UCLASS()
 class PROJECT_GEAR_API ABulletActor : public AActor
 {
@@ -15,11 +23,23 @@ public:
 	// Sets default values for this actor's properties
 	ABulletActor();
 
+	UPROPERTY(EditAnywhere)
+	EBulletPhysicSimMode SimulationMode = EBulletPhysicSimMode::Ignore;
+
+	UPROPERTY(EditAnywhere)
+	float BulletFriction = 0.6;
+
+	UPROPERTY(EditAnywhere)
+	float BulletRestitution = 0.3;
+
+	UPROPERTY(EditAnywhere)
+	float BulletMass = 1;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

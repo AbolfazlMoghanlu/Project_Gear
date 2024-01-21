@@ -14,7 +14,10 @@ void ABulletActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ABulletManager::Get()->AddSimulatedActor(this);
+	if (SimulationMode > EBulletPhysicSimMode::Ignore)
+	{
+		ABulletManager::Get()->AddSimulatedActor(this);
+	}
 }
 
 void ABulletActor::Tick(float DeltaTime)

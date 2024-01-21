@@ -2,11 +2,3 @@
 
 
 #include "Bullet/BulletMotionState.h"
-
-BulletMotionState::BulletMotionState()
-{
-}
-
-BulletMotionState::~BulletMotionState()
-{
-}

@@ -4,16 +4,17 @@
 #include "Bullet/BulletDebugDraw.h"
 #include "Bullet/BulletMain.h"
 #include "Bullet/BulletHelper.h"
+#include "Bullet/BulletManager.h"
 #include "DrawDebugHelpers.h"
 
-BulletDebugDraw::BulletDebugDraw(UWorld* world, const FVector& worldOrigin)
-	: World(world), WorldOrigin(worldOrigin), DebugMode(btIDebugDraw::DBG_DrawWireframe)
+BulletDebugDraw::BulletDebugDraw(const FVector& worldOrigin)
+	: WorldOrigin(worldOrigin), DebugMode(btIDebugDraw::DBG_DrawWireframe)
 {
 }
 
 void BulletDebugDraw::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 {
-	DrawDebugLine(World,
+	DrawDebugLine(ABulletManager::Get()->GetWorld(),
 		BulletHelpers::ToUEPos(from, WorldOrigin),
 		BulletHelpers::ToUEPos(to, WorldOrigin),
 		BulletHelpers::ToUEColour(color));

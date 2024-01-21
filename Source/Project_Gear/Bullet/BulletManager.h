@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Bullet/BulletActor.h"
 #include "BulletManager.generated.h"
 
 UCLASS()
 class PROJECT_GEAR_API ABulletManager : public AActor
 {
 	GENERATED_BODY()
-	
 
 public:	
 	ABulletManager();
@@ -19,12 +18,22 @@ public:
 
 	static ABulletManager* Get();
 
-	void AddSimulatedActor(AActor* Actor);
+	void AddSimulatedActor(ABulletActor* Actor);
 
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Destroyed() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	static ABulletManager* BulletManager;
 
 	void Init();
+
+	UPROPERTY(EditAnywhere)
+	float SimulationFrequency = 1.0f/60;
+
+	UPROPERTY(EditAnywhere)
+	bool bShowDebug = false;
 };
