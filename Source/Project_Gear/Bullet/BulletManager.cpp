@@ -9,13 +9,13 @@ void ABulletManager::Init()
 {
 	BulletManager = this;
 	UBulletWorld::Get()->Init();
-	UBulletWorld::Get()->bShowDebug = bShowDebug;
 }
 
 ABulletManager::ABulletManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	Init();
 }
 
 ABulletManager* ABulletManager::Get()
@@ -28,11 +28,16 @@ void ABulletManager::AddSimulatedActor(ABulletActor* Actor)
 	UBulletWorld::Get()->AddSimulatedActor(Actor);
 }
 
+BulletRayResult ABulletManager::Ray(FVector Start, FVector End, bool bSingle /*= true*/)
+{
+	return UBulletWorld::Get()->Ray(Start, End);
+}
+
 void ABulletManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Init();
+	UBulletWorld::Get()->bShowDebug = bShowDebug;
 }
 
 void ABulletManager::Destroyed()

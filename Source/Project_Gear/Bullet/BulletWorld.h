@@ -96,5 +96,7 @@ public:
 	btCollisionShape* GetCapsuleCollisionShape(float Radius, float Height);
 	btCollisionShape* GetConvexHullCollisionShape(UBodySetup* BodySetup, int ConvexIndex, const FVector& Scale);
 
+	BulletRayResult Ray(FVector Start, FVector End, bool bSingle = true);
+
 	friend class ABulletManager;
 };

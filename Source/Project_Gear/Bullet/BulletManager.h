@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Bullet/BulletActor.h"
+#include "Bullet/BulletMinimal.h"
 #include "BulletManager.generated.h"
 
 UCLASS()
@@ -20,6 +21,11 @@ public:
 
 	void AddSimulatedActor(ABulletActor* Actor);
 
+	BulletRayResult Ray(FVector Start, FVector End, bool bSingle = true);
+
+	UPROPERTY(EditAnywhere)
+	bool bShowDebug = false;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -34,6 +40,4 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float SimulationFrequency = 1.0f/60;
 
-	UPROPERTY(EditAnywhere)
-	bool bShowDebug = false;
 };

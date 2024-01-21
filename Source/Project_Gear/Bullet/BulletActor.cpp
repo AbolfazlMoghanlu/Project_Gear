@@ -3,6 +3,7 @@
 
 #include "Bullet/BulletActor.h"
 #include "Bullet/BulletManager.h"
+#include "Bullet/BulletMain.h"
 
 ABulletActor::ABulletActor()
 {
@@ -24,4 +25,8 @@ void ABulletActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABulletActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
 }

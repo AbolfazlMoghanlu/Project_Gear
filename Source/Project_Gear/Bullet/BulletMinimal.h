@@ -36,5 +36,11 @@ class btSphereShape;
 class btRigidBody;
 class btCollisionObject;
 
+struct BulletRayResult 
+{
+	bool bHit;
+	FVector Location;
+};
+
 PRAGMA_POP_PLATFORM_DEFAULT_PACKING
 THIRD_PARTY_INCLUDES_END

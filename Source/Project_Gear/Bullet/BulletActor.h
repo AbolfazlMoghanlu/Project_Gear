@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Bullet/BulletMain.h"
 #include "BulletActor.generated.h"
 
 UENUM()
@@ -20,7 +21,6 @@ class PROJECT_GEAR_API ABulletActor : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ABulletActor();
 
 	UPROPERTY(EditAnywhere)
@@ -36,11 +36,13 @@ public:
 	float BulletMass = 1;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	btRigidBody* RigidBody;
+
+	friend class UBulletWorld;
 };

@@ -368,6 +368,25 @@ btCollisionShape* UBulletWorld::GetConvexHullCollisionShape(UBodySetup* BodySetu
 	return C;
 }
 
+BulletRayResult UBulletWorld::Ray(FVector Start, FVector End, bool bSingle /*= true*/)
+{
+	BulletRayResult Result;
+
+	if(bSingle)
+	{
+		btVector3 RayStart = BulletHelpers::ToBtPos(Start, FVector::ZeroVector);
+		btVector3 RayEnd = BulletHelpers::ToBtPos(End, FVector::ZeroVector);
+
+		btCollisionWorld::ClosestRayResultCallback RayCallback(RayStart, RayEnd);
+	 	BtWorld->rayTest(RayStart, RayEnd, RayCallback);
+
+		Result.bHit = RayCallback.hasHit();
+		Result.Location = BulletHelpers::ToUEPos(RayCallback.m_hitPointWorld, FVector::ZeroVector);
+	}
+
+	return Result;
+}
+
 // ----------------------------------------------------------------------------------
 
 const UBulletWorld::CachedDynamicShapeData& UBulletWorld::GetCachedDynamicShapeData(ABulletActor* Actor)
@@ -445,6 +464,8 @@ btRigidBody* UBulletWorld::AddRigidBody(ABulletActor* Actor, btCollisionShape* C
 	Body->setUserPointer(Actor);
 	BtWorld->addRigidBody(Body);
 	BtRigidBodies.Add(Body);
+
+	Actor->RigidBody = Body;
 
 	return Body;
 }
