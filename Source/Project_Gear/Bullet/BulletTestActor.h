@@ -158,14 +158,14 @@ public:
 };
 
 
-class BulletDebugDraw : public btIDebugDraw
+class BulletDebugDrawTemp : public btIDebugDraw
 {
 protected:
 	UWorld* World;
 	FVector WorldOrigin;
 	int DebugMode;
 public:
-	BulletDebugDraw(UWorld* world, const FVector& worldOrigin);
+	BulletDebugDrawTemp(UWorld* world, const FVector& worldOrigin);
 
 	void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
 

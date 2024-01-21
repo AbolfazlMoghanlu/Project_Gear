@@ -3,6 +3,8 @@
 #pragma once
 #include "CoreMinimal.h"
 
+DECLARE_LOG_CATEGORY_CLASS(LogBulletPhysic, Log, All);
+
 // The most minimal include for Bullet as needed by headers for value types / subclasses
 
 // This is needed to suppress some warnings that UE4 escalates that Bullet doesn't
