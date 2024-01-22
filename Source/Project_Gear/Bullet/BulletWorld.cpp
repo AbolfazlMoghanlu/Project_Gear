@@ -226,7 +226,6 @@ void UBulletWorld::ExtractPhysicsGeometry(UShapeComponent* Sc, const FTransform&
 	ExtractPhysicsGeometry(CompFullRelXForm, Sc->ShapeBodySetup, CB);
 }
 
-
 void UBulletWorld::ExtractPhysicsGeometry(const FTransform& XformSoFar, UBodySetup* BodySetup, PhysicsGeometryCallback CB)
 {
 	FVector Scale = XformSoFar.GetScale3D();
