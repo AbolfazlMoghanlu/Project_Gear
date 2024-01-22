@@ -7,6 +7,9 @@
 #include "Bullet/BulletHelper.h"
 #include "Bullet/BulletVehicle.h"
 
+#include "Project_GearCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
 UBulletWheel::UBulletWheel()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -50,15 +53,30 @@ void UBulletWheel::UpdateWheelForces()
 	float Drag = FVector::DotProduct(GetUpVector(), Velocity) * -SuspensionDamping;
 
 	UpForce = RayResult.bHit ? GetUpVector() * (Amp + Drag) : FVector ::ZeroVector;
+
+	// --------------------------------------------------------------------------------------
+
+	AProject_GearCharacter* PlayerPawn = Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (PlayerPawn)
+	{
+		FVector2D Input = PlayerPawn->CurrentMovementInput;
+		
+		ForwardForce = GetForwardVector() * Speed * Input.Y;
+	}
+
+	// ---------------------------------------------------------------------------------------
+
 }
 
 void UBulletWheel::ApplyForces()
 {
 	if (OwningVehicle && OwningVehicle->RigidBody)
 	{
-		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(UpForce), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
+		FVector ForcesSum = ForwardForce + UpForce;
 
-		DrawDebugLine(GetWorld(), GetComponentLocation(), GetComponentLocation() + UpForce, FColor::Blue);
+		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(ForcesSum), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
+
+		DrawDebugLine(GetWorld(), GetComponentLocation(), GetComponentLocation() + ForcesSum / DebugLineScaler, FColor::Blue);
 	}
 }
 

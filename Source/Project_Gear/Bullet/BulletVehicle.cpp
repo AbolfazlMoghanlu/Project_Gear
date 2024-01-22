@@ -37,4 +37,6 @@ void ABulletVehicle::Tick(float DeltaTime)
 void ABulletVehicle::BeginPlay()
 {
 	Super::BeginPlay();
+
+	RigidBody->setActivationState(DISABLE_DEACTIVATION);
 }

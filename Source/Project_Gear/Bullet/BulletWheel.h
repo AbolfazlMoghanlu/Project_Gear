@@ -28,6 +28,15 @@ public:
 	UPROPERTY(EditAnywhere, Category="Suspension")
 	float SuspensionDamping = 200000.0;
 
+	UPROPERTY(EditAnywhere, Category="Engine")
+	float Speed = 200000.0;
+
+	UPROPERTY(EditAnywhere, Category="Engine")
+	float TopSpeed = 200000.0;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	float DebugLineScaler = 200000.0;
+
 	UPROPERTY()
 	ABulletVehicle* OwningVehicle;
 
