@@ -19,23 +19,36 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, Category="Suspension")
+	UPROPERTY(EditAnywhere, Category = Suspension)
 	float SuspensionRestLength = 50;
 
-	UPROPERTY(EditAnywhere, Category="Suspension")
+	UPROPERTY(EditAnywhere, Category = Suspension)
 	float SuspensionStrength = 20000.0;
 
-	UPROPERTY(EditAnywhere, Category="Suspension")
+	UPROPERTY(EditAnywhere, Category = Suspension)
 	float SuspensionDamping = 200000.0;
 
-	UPROPERTY(EditAnywhere, Category="Engine")
-	float Speed = 200000.0;
+	UPROPERTY(EditAnywhere, Category = Engine)
+	bool bEffectedByEngine = true;	
+	
+	UPROPERTY(EditAnywhere, Category = Engine)
+	bool bEffectedBySteering = true;
+	
+	UPROPERTY(EditAnywhere, Category = Engine)
+	float MaxSteerAngle = 45.0;
 
-	UPROPERTY(EditAnywhere, Category="Engine")
-	float TopSpeed = 200000.0;
+	UPROPERTY(EditAnywhere, Category = Engine)
+	float WheelMass = 20000;
 
-	UPROPERTY(EditAnywhere, Category="Debug")
+	UPROPERTY(EditAnywhere, Category = Engine)
+	float SlideFrictionMin = 0.2;
+
+	UPROPERTY(EditAnywhere, Category = Engine)
+	float SlideFrictionMax = 0.8;
+
+	UPROPERTY(EditAnywhere, Category = Debug)
 	float DebugLineScaler = 200000.0;
+
 
 	UPROPERTY()
 	ABulletVehicle* OwningVehicle;
@@ -51,7 +64,7 @@ protected:
 	float SuspentionSpeed;
 
 	void UpdateVelocity();
-	void UpdateWheelForces();
+	void UpdateWheelForces(float Timestep);
 	void ApplyForces();
 
 	FVector UpForce;

@@ -20,6 +20,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	/* cm/s */
+	UFUNCTION(BlueprintPure, Category = BulletVehicle)
+	FVector GetBulletVehicleVelocity();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -38,6 +42,15 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UBulletWheel* Wheel_RR;
+
+	UPROPERTY(EditAnywhere, Category="Engine")
+	float Speed = 200000.0;
+
+	UPROPERTY(EditAnywhere, Category="Engine")
+	float TopSpeed = 200000.0;
+
+	FVector LastLocation;
+	FVector Velocity;
 
 	friend class UBulletWheel;
 };

@@ -162,15 +162,15 @@ void UBulletWorld::StepSimulation(float DeltaTime, float Frequency)
 	int StepNum = DeltaTime / Frequency;
 	float Remainder = DeltaTime - (Frequency * StepNum);
 
-	for (int i = 0; i < StepNum; i++)
-	{
-		BtWorld->stepSimulation(Frequency, 1, Frequency);		
-	}
-	
-	BtWorld->stepSimulation(Remainder, 1, Frequency);		
+ 	for (int i = 0; i < StepNum; i++)
+ 	{
+ 		BtWorld->stepSimulation(Frequency, 1, Frequency);		
+ 	}
+ 	
+ 	BtWorld->stepSimulation(Remainder, 1, Frequency);		
 
-	//BtWorld->stepSimulation(DeltaTime, DeltaTime / Frequency, Frequency);
-	//BtWorld->stepSimulation(DeltaTime, 1, Frequency);
+	BtWorld->stepSimulation(DeltaTime, DeltaTime / Frequency, Frequency);
+	BtWorld->stepSimulation(DeltaTime, 1, Frequency);
 
 #if WITH_EDITORONLY_DATA
 	if (bShowDebug)

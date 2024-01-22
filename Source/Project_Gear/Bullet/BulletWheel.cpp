@@ -35,7 +35,7 @@ void UBulletWheel::UpdateVelocity()
 	LastPosition = CurrentLocation;
 }
 
-void UBulletWheel::UpdateWheelForces()
+void UBulletWheel::UpdateWheelForces(float TimeStep)
 {
 	FVector SuspensionStartPos = GetComponentLocation();
 	FVector SuspensionEndPos = GetComponentLocation() + GetUpVector() * -SuspensionRestLength;
@@ -57,22 +57,49 @@ void UBulletWheel::UpdateWheelForces()
 	// --------------------------------------------------------------------------------------
 
 	AProject_GearCharacter* PlayerPawn = Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	if (PlayerPawn)
-	{
-		FVector2D Input = PlayerPawn->CurrentMovementInput;
-		
-		ForwardForce = GetForwardVector() * Speed * Input.Y;
+	FVector2d Input = PlayerPawn ? PlayerPawn->CurrentMovementInput : FVector2D::ZeroVector;
+	Input = Input.ClampAxes(-1, 1);
+
+	ForwardForce = FVector::ZeroVector;
+
+	if (bEffectedByEngine)
+	{		
+		ForwardForce = GetForwardVector() * OwningVehicle->Speed * Input.Y;
 	}
 
 	// ---------------------------------------------------------------------------------------
 
+	RightForce = FVector::ZeroVector;
+
+	if (bEffectedBySteering)
+	{
+		float SteerAngle = Input.X * MaxSteerAngle;
+		SetRelativeRotation(FRotator(0, SteerAngle, 0));
+	}
+
+	float ForwardAmp = FVector::DotProduct(GetForwardVector(), Velocity);
+	float RightAmp = FVector::DotProduct(GetRightVector(), Velocity);
+		
+	float SlideRatio = FMath::Clamp(RightAmp / (RightAmp + ForwardAmp), 0, 1);
+	float SlideFriction = FMath::Lerp(SlideFrictionMin, SlideFrictionMax, SlideRatio);
+
+	FVector LatFrictionForce = GetRightVector() * -RightAmp * SlideFriction;
+
+	RightForce = GetRightVector() * RightAmp * WheelMass * -SlideFrictionMin / TimeStep;
+
+	if (OwningVehicle && OwningVehicle->RigidBody)
+	{
+		
+
+		//OwningVehicle->RigidBody->applyImpulse(BulletHelpers::ToBtDir(LatFrictionForce), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
+	}
 }
 
 void UBulletWheel::ApplyForces()
 {
 	if (OwningVehicle && OwningVehicle->RigidBody)
 	{
-		FVector ForcesSum = ForwardForce + UpForce;
+		FVector ForcesSum = ForwardForce + UpForce + RightForce;
 
 		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(ForcesSum), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
 
@@ -86,7 +113,7 @@ void UBulletWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	UpdateVelocity();
 
-	UpdateWheelForces();
+	UpdateWheelForces(DeltaTime);
 
 	ApplyForces();
 }

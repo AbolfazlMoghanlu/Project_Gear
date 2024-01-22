@@ -31,7 +31,14 @@ void ABulletVehicle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector CurrentLocation = GetActorLocation();
+	Velocity = (CurrentLocation - LastLocation) / DeltaTime;
+	LastLocation = CurrentLocation;
+}
 
+FVector ABulletVehicle::GetBulletVehicleVelocity()
+{
+	return Velocity;
 }
 
 void ABulletVehicle::BeginPlay()
@@ -39,4 +46,6 @@ void ABulletVehicle::BeginPlay()
 	Super::BeginPlay();
 
 	RigidBody->setActivationState(DISABLE_DEACTIVATION);
+
+	LastLocation = GetActorLocation();
 }
