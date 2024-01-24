@@ -159,18 +159,18 @@ void UBulletWorld::AddSimulatedDynamicActor(ABulletActor* Actor)
 
 void UBulletWorld::StepSimulation(float DeltaTime, float Frequency)
 {
-	int StepNum = DeltaTime / Frequency;
-	float Remainder = DeltaTime - (Frequency * StepNum);
+	//int StepNum = DeltaTime / Frequency;
+	//float Remainder = DeltaTime - (Frequency * StepNum);
+	//
+ 	//for (int i = 0; i < StepNum; i++)
+ 	//{
+ 	//	BtWorld->stepSimulation(Frequency, 1, Frequency);		
+ 	//}
+ 	//
+ 	//BtWorld->stepSimulation(Remainder, 1, Frequency);		
 
- 	for (int i = 0; i < StepNum; i++)
- 	{
- 		BtWorld->stepSimulation(Frequency, 1, Frequency);		
- 	}
- 	
- 	BtWorld->stepSimulation(Remainder, 1, Frequency);		
-
-	BtWorld->stepSimulation(DeltaTime, DeltaTime / Frequency, Frequency);
-	BtWorld->stepSimulation(DeltaTime, 1, Frequency);
+	//BtWorld->stepSimulation(DeltaTime, DeltaTime / Frequency, Frequency);
+	BtWorld->stepSimulation(DeltaTime, 10, Frequency);
 
 #if WITH_EDITORONLY_DATA
 	if (bShowDebug)
@@ -402,7 +402,7 @@ BulletRayResult UBulletWorld::Ray(FVector Start, FVector End, bool bSingle /*= t
 
 		if (Result.bHit)
 		{
-			DrawDebugSphere(ABulletManager::Get()->GetWorld(), Result.Location, 5, 32, FColor::Green);
+			DrawDebugBox(ABulletManager::Get()->GetWorld(), Result.Location, FVector(3), FColor::Green);
 		}
 	}
 

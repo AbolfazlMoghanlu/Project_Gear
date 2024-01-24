@@ -28,31 +28,38 @@ void UBulletWheel::BeginPlay()
 }
 
 
-void UBulletWheel::UpdateVelocity()
+void UBulletWheel::UpdateVelocity(float TimeStep)
 {
 	FVector CurrentLocation = GetComponentLocation();
-	Velocity = CurrentLocation - LastPosition;
+	Velocity = (CurrentLocation - LastPosition) / TimeStep;
 	LastPosition = CurrentLocation;
 }
 
 void UBulletWheel::UpdateWheelForces(float TimeStep)
 {
+	UpForce = FVector::ZeroVector;
+
+	RestLength = SuspensionRestLength + WheelRadius;
+
 	FVector SuspensionStartPos = GetComponentLocation();
-	FVector SuspensionEndPos = GetComponentLocation() + GetUpVector() * -SuspensionRestLength;
+	FVector SuspensionEndPos = GetComponentLocation() - RestLength * GetUpVector();
 
 	BulletRayResult RayResult = ABulletManager::Get()->Ray(SuspensionStartPos, SuspensionEndPos);
 
-	LastSuspentionOffset = SuspentionOffset;
-	SuspentionOffset = RayResult.bHit ?
-		(SuspensionRestLength / 2) - FVector::Dist(SuspensionStartPos, RayResult.Location) :
-		-(SuspensionRestLength / 2);
+	if (RayResult.bHit)
+	{
+		LastSuspentionOffset = SuspentionOffset;
+		SuspentionOffset = RestLength - FVector::Distance(SuspensionStartPos, RayResult.Location);
 
-	SuspentionSpeed = SuspentionOffset - LastSuspentionOffset;
+		SuspentionSpeed = SuspentionOffset - LastSuspentionOffset;
 
-	float Amp = SuspentionOffset * SuspensionStrength;
-	float Drag = FVector::DotProduct(GetUpVector(), Velocity) * -SuspensionDamping;
+		float Amp = SuspentionOffset * SuspensionStrength;
+		float Drag = FVector::DotProduct(GetUpVector(), Velocity) * SuspensionDamping;
 
-	UpForce = RayResult.bHit ? GetUpVector() * (Amp + Drag) : FVector ::ZeroVector;
+		UpForce = GetUpVector() * (Amp - Drag);
+	}
+
+	UpForce += FVector::DownVector * WheelMass * -9.8; 
 
 	// --------------------------------------------------------------------------------------
 
@@ -87,10 +94,9 @@ void UBulletWheel::UpdateWheelForces(float TimeStep)
 
 	RightForce = GetRightVector() * RightAmp * WheelMass * -SlideFrictionMin / TimeStep;
 
+
 	if (OwningVehicle && OwningVehicle->RigidBody)
 	{
-		
-
 		//OwningVehicle->RigidBody->applyImpulse(BulletHelpers::ToBtDir(LatFrictionForce), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
 	}
 }
@@ -101,20 +107,26 @@ void UBulletWheel::ApplyForces()
 	{
 		FVector ForcesSum = ForwardForce + UpForce + RightForce;
 
-		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(ForcesSum), BulletHelpers::ToBtPos(GetRelativeLocation(), FVector::ZeroVector));
+		OwningVehicle->RigidBody->applyForce(BulletHelpers::ToBtDir(ForcesSum), BulletHelpers::ToBtPos(GetComponentLocation(), OwningVehicle->GetActorLocation()));
 
 		DrawDebugLine(GetWorld(), GetComponentLocation(), GetComponentLocation() + ForcesSum / DebugLineScaler, FColor::Blue);
 	}
+
+	FVector Restlocation = GetComponentLocation() - RestLength * GetUpVector() * 0.5;
+	
+	DrawDebugCapsule(GetWorld(), Restlocation, RestLength / 2, 2, GetComponentRotation().Quaternion(), FColor::Yellow);
+	DrawDebugSphere(GetWorld(), GetComponentLocation() + (SuspentionOffset - RestLength + WheelRadius) * GetUpVector(), WheelRadius, 32, FColor::Cyan);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s - %f - %s"), *GetName(), SuspentionOffset, *UpForce.ToString());
 }
 
 void UBulletWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UpdateVelocity();
+	UpdateVelocity(DeltaTime);
 
 	UpdateWheelForces(DeltaTime);
 
 	ApplyForces();
 }
-

@@ -23,6 +23,9 @@ public:
 	float SuspensionRestLength = 50;
 
 	UPROPERTY(EditAnywhere, Category = Suspension)
+	float WheelRadius = 30;
+
+	UPROPERTY(EditAnywhere, Category = Suspension)
 	float SuspensionStrength = 20000.0;
 
 	UPROPERTY(EditAnywhere, Category = Suspension)
@@ -62,8 +65,9 @@ protected:
 	float LastSuspentionOffset;
 	float SuspentionOffset;
 	float SuspentionSpeed;
+	float RestLength;
 
-	void UpdateVelocity();
+	void UpdateVelocity(float TimeStep);
 	void UpdateWheelForces(float Timestep);
 	void ApplyForces();
 
