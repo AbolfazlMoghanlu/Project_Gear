@@ -63,7 +63,8 @@ void UBulletWheel::UpdateWheelForces(float TimeStep)
 
 	// --------------------------------------------------------------------------------------
 
-	AProject_GearCharacter* PlayerPawn = Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	AProject_GearCharacter* PlayerPawn =  OwningVehicle ? Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), OwningVehicle->PlayerIndex)) : nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("PlayerPawn_%i is %s _ %s"), OwningVehicle->PlayerIndex, PlayerPawn ? TEXT("Valid") : TEXT("Invalid"), PlayerPawn ? *PlayerPawn->CurrentMovementInput.ToString() : *FVector2D::ZeroVector.ToString());
 	FVector2d Input = PlayerPawn ? PlayerPawn->CurrentMovementInput : FVector2D::ZeroVector;
 	Input = Input.ClampAxes(-1, 1);
 
@@ -116,17 +117,18 @@ void UBulletWheel::ApplyForces()
 	
 	DrawDebugCapsule(GetWorld(), Restlocation, RestLength / 2, 2, GetComponentRotation().Quaternion(), FColor::Yellow);
 	DrawDebugSphere(GetWorld(), GetComponentLocation() + (SuspentionOffset - RestLength + WheelRadius) * GetUpVector(), WheelRadius, 32, FColor::Cyan);
-
-	UE_LOG(LogTemp, Warning, TEXT("%s - %f - %s"), *GetName(), SuspentionOffset, *UpForce.ToString());
 }
 
 void UBulletWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UpdateVelocity(DeltaTime);
+	if (OwningVehicle && OwningVehicle->GetLocalRole() >= ROLE_Authority)
+	{
+		UpdateVelocity(DeltaTime);
 
-	UpdateWheelForces(DeltaTime);
+		UpdateWheelForces(DeltaTime);
 
-	ApplyForces();
+		ApplyForces();		
+	}
 }

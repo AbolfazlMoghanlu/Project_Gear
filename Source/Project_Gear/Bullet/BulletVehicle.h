@@ -27,6 +27,8 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* VehicleBody;
@@ -48,6 +50,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Engine")
 	float TopSpeed = 200000.0;
+
+	UPROPERTY(EditAnywhere, Replicated, Category="Network")
+	int PlayerIndex = 0;
 
 	FVector LastLocation;
 	FVector Velocity;

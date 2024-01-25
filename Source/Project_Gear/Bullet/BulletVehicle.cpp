@@ -7,6 +7,8 @@
 #include "Bullet/BulletManager.h"
 #include "DrawDebugHelpers.h"
 
+#include "Net/UnrealNetwork.h"
+
 ABulletVehicle::ABulletVehicle()
 {
 	VehicleBody = CreateDefaultSubobject<UStaticMeshComponent>(FName("VehicleBody"));
@@ -27,6 +29,13 @@ ABulletVehicle::ABulletVehicle()
 	SimulationMode = EBulletPhysicSimMode::Dynamic;
 }
 
+void ABulletVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABulletVehicle, PlayerIndex);
+}
+
 void ABulletVehicle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -43,9 +52,23 @@ FVector ABulletVehicle::GetBulletVehicleVelocity()
 
 void ABulletVehicle::BeginPlay()
 {
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		SimulationMode = EBulletPhysicSimMode::Ignore;
+	}
+
+	//if (GetLocalRole() == ROLE_Authority)
+	//{
+	//	SetReplicates(true);
+	//	SetReplicateMovement(true);
+	//}
+
 	Super::BeginPlay();
 
-	RigidBody->setActivationState(DISABLE_DEACTIVATION);
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		RigidBody->setActivationState(DISABLE_DEACTIVATION);
+	}
 
 	LastLocation = GetActorLocation();
 }
