@@ -62,11 +62,8 @@ void UBulletWheel::UpdateWheelForces(float TimeStep)
 	UpForce += FVector::DownVector * WheelMass * -9.8; 
 
 	// --------------------------------------------------------------------------------------
-
-	AProject_GearCharacter* PlayerPawn =  OwningVehicle ? Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), OwningVehicle->PlayerIndex)) : nullptr;
-	UE_LOG(LogTemp, Warning, TEXT("PlayerPawn_%i is %s _ %s"), OwningVehicle->PlayerIndex, PlayerPawn ? TEXT("Valid") : TEXT("Invalid"), PlayerPawn ? *PlayerPawn->CurrentMovementInput.ToString() : *FVector2D::ZeroVector.ToString());
-	FVector2d Input = PlayerPawn ? PlayerPawn->CurrentMovementInput : FVector2D::ZeroVector;
-	Input = Input.ClampAxes(-1, 1);
+	
+	FVector2d Input = OwningVehicle ? OwningVehicle->VehicleInput : FVector2D::ZeroVector;
 
 	ForwardForce = FVector::ZeroVector;
 

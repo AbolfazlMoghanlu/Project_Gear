@@ -54,6 +54,15 @@ protected:
 	UPROPERTY(EditAnywhere, Replicated, Category="Network")
 	int PlayerIndex = 0;
 
+	UPROPERTY(EditAnywhere, Replicated, Category="Network")
+	FVector2D VehicleInput;
+
+	UPROPERTY(EditAnywhere, Replicated, Category="Network")
+	FTransform RemoteTransform;
+
+	UPROPERTY(EditAnywhere, Category="Network")
+	float MaxLocaionErrorTreshold = 100.0f;
+
 	FVector LastLocation;
 	FVector Velocity;
 

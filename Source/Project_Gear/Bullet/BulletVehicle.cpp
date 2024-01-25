@@ -8,6 +8,8 @@
 #include "DrawDebugHelpers.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Project_GearCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 ABulletVehicle::ABulletVehicle()
 {
@@ -34,6 +36,8 @@ void ABulletVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABulletVehicle, PlayerIndex);
+	DOREPLIFETIME(ABulletVehicle, RemoteTransform);
+	DOREPLIFETIME(ABulletVehicle, VehicleInput);
 }
 
 void ABulletVehicle::Tick(float DeltaTime)
@@ -43,6 +47,34 @@ void ABulletVehicle::Tick(float DeltaTime)
 	FVector CurrentLocation = GetActorLocation();
 	Velocity = (CurrentLocation - LastLocation) / DeltaTime;
 	LastLocation = CurrentLocation;
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		RemoteTransform = GetActorTransform();
+		
+		AProject_GearCharacter* PlayerPawn = Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), PlayerIndex));
+		VehicleInput = PlayerPawn ? PlayerPawn->CurrentMovementInput : FVector2D::ZeroVector;
+		VehicleInput = VehicleInput.ClampAxes(-1, 1);
+	}
+	else
+	{
+		auto TransformLerp = [](const FTransform& T1, const FTransform& T2, float Alpha)
+		{
+			return FTransform(
+				FMath::Lerp(T1.GetRotation(), T2.GetRotation(), Alpha),
+				FMath::Lerp(T1.GetLocation(), T2.GetLocation(), Alpha),
+				FMath::Lerp(T1.GetScale3D(), T2.GetScale3D(), Alpha)
+				);
+		};
+
+		FTransform LocalTransform = GetActorTransform();
+		const float LocationError = FVector::Distance(LocalTransform.GetLocation(), RemoteTransform.GetLocation());
+		
+		float Alpha = FMath::Clamp(LocationError/MaxLocaionErrorTreshold, 0, 1);
+		FTransform TargetTransform = TransformLerp(LocalTransform, RemoteTransform, Alpha);
+
+		SetActorTransform(RemoteTransform);
+	}
 }
 
 FVector ABulletVehicle::GetBulletVehicleVelocity()
