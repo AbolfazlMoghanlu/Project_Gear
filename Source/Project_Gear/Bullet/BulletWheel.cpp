@@ -63,7 +63,8 @@ void UBulletWheel::UpdateWheelForces(float TimeStep)
 
 	// --------------------------------------------------------------------------------------
 	
-	FVector2d Input = OwningVehicle ? OwningVehicle->VehicleInput : FVector2D::ZeroVector;
+	//FVector2d Input = OwningVehicle ? OwningVehicle->VehicleInput : FVector2D::ZeroVector;
+	FVector2d Input = OwningVehicle ? OwningVehicle->VehicleBufferedInput : FVector2D::ZeroVector;
 
 	ForwardForce = FVector::ZeroVector;
 
@@ -120,12 +121,12 @@ void UBulletWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (OwningVehicle && OwningVehicle->GetLocalRole() >= ROLE_Authority)
-	{
+// 	if (OwningVehicle && OwningVehicle->GetLocalRole() >= ROLE_Authority)
+// 	{
 		UpdateVelocity(DeltaTime);
 
 		UpdateWheelForces(DeltaTime);
 
 		ApplyForces();		
-	}
+//	}
 }

@@ -55,6 +55,8 @@ void ABulletVehicle::Tick(float DeltaTime)
 		AProject_GearCharacter* PlayerPawn = Cast<AProject_GearCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), PlayerIndex));
 		VehicleInput = PlayerPawn ? PlayerPawn->CurrentMovementInput : FVector2D::ZeroVector;
 		VehicleInput = VehicleInput.ClampAxes(-1, 1);
+
+		VehicleBufferedInput = ConsumeInputBuffer();
 	}
 	else
 	{
@@ -70,7 +72,9 @@ void ABulletVehicle::Tick(float DeltaTime)
 		FTransform LocalTransform = GetActorTransform();
 		const float LocationError = FVector::Distance(LocalTransform.GetLocation(), RemoteTransform.GetLocation());
 		
-		float Alpha = FMath::Clamp(LocationError/MaxLocaionErrorTreshold, 0, 1);
+		//float Alpha = FMath::Clamp(LocationError/MaxLocaionErrorTreshold, 0, 1);
+		float Alpha = LocationError > MaxLocaionErrorTreshold ? 1 : 0;
+		
 		FTransform TargetTransform = TransformLerp(LocalTransform, RemoteTransform, Alpha);
 
 		SetActorTransform(RemoteTransform);
@@ -80,6 +84,43 @@ void ABulletVehicle::Tick(float DeltaTime)
 FVector ABulletVehicle::GetBulletVehicleVelocity()
 {
 	return Velocity;
+}
+
+void ABulletVehicle::AddInputBuffer(FVector2D Input)
+{
+	MovementInputBuffer.Enqueue(Input);
+	MovementInputBufferLength++;
+}
+
+FVector2D ABulletVehicle::ConsumeInputBuffer()
+{
+	if (MovementInputBufferLength > 4)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s has %i input buffered. consuming 2 inputs."), *GetName(), MovementInputBufferLength);
+		MovementInputBufferLength -= 2;
+
+		FVector2D Input_1;
+		FVector2D Input_2;
+
+		MovementInputBuffer.Dequeue(Input_1);
+		MovementInputBuffer.Dequeue(Input_2);
+
+		return (Input_1 + Input_2) / 2;
+	}
+
+	else if (MovementInputBufferLength > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s has %i input buffered. consuming 1 inputs."), *GetName(), MovementInputBufferLength);
+		MovementInputBufferLength -= 1;
+
+		FVector2D Input_1;
+		MovementInputBuffer.Dequeue(Input_1);
+
+		return Input_1;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%s has %i input buffered. server is starving .consuming 0 inputs."), *GetName(), MovementInputBufferLength);
+	return VehicleBufferedInput;
 }
 
 void ABulletVehicle::BeginPlay()
