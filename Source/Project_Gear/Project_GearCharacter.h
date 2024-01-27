@@ -55,9 +55,6 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	bool IsDriving();
 			
 
 protected:
@@ -72,8 +69,5 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
-	FVector2D CurrentMovementInput;
 };
 

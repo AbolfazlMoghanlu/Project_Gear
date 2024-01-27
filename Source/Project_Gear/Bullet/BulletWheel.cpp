@@ -63,8 +63,7 @@ void UBulletWheel::UpdateWheelForces(float TimeStep)
 
 	// --------------------------------------------------------------------------------------
 	
-	//FVector2d Input = OwningVehicle ? OwningVehicle->VehicleInput : FVector2D::ZeroVector;
-	FVector2d Input = OwningVehicle ? OwningVehicle->VehicleBufferedInput : FVector2D::ZeroVector;
+	FVector2d Input = OwningVehicle ? OwningVehicle->VehicleBufferedState.VehicleInput.MovementInput : FVector2D::ZeroVector;
 
 	ForwardForce = FVector::ZeroVector;
 
@@ -129,4 +128,28 @@ void UBulletWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 		ApplyForces();		
 //	}
+}
+
+FWheelPhysicState UBulletWheel::GetWheelState() const
+{
+	FWheelPhysicState State;
+
+	State.LastPosition = LastPosition;
+	State.Velocity = Velocity;
+	State.LastSuspentionOffset = LastSuspentionOffset;
+	State.SuspentionOffset = SuspentionOffset;
+	State.SuspentionSpeed = SuspentionSpeed;
+	State.RestLength = RestLength;
+
+	return State;
+}
+
+void UBulletWheel::SetWheelState(const FWheelPhysicState& State)
+{
+	LastPosition = State.LastPosition;
+	Velocity = State.Velocity;
+	LastSuspentionOffset = State.LastSuspentionOffset;
+	SuspentionOffset = State.SuspentionOffset;
+	SuspentionSpeed = State.SuspentionSpeed;
+	RestLength = State.RestLength;
 }

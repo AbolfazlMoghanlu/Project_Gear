@@ -9,6 +9,21 @@
 
 class ABulletVehicle;
 
+USTRUCT()
+struct FWheelPhysicState
+{
+	GENERATED_BODY()
+
+public:
+	FVector LastPosition;
+	FVector Velocity;
+
+	float LastSuspentionOffset;
+	float SuspentionOffset;
+	float SuspentionSpeed;
+	float RestLength;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_GEAR_API UBulletWheel : public USceneComponent
 {
@@ -55,6 +70,9 @@ public:
 
 	UPROPERTY()
 	ABulletVehicle* OwningVehicle;
+
+	FWheelPhysicState GetWheelState() const;
+	void SetWheelState(const FWheelPhysicState& State);
 
 protected:
 	virtual void BeginPlay() override;

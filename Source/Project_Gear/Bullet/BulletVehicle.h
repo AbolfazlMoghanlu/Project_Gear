@@ -8,6 +8,64 @@
 #include "Containers/Queue.h"
 #include "BulletVehicle.generated.h"
 
+USTRUCT()
+struct FVehicleTimeStamp
+{
+	GENERATED_BODY()
+
+
+public:
+	
+	uint64 FrameIndex;
+	float FrameDeltaTime;
+};
+
+USTRUCT()
+struct FVehicleInput
+{
+	GENERATED_BODY()
+
+
+public:
+	
+	FVector2D MovementInput;
+};
+
+USTRUCT()
+struct FVehicleState
+{
+	GENERATED_BODY()
+
+
+public:
+
+	FVehicleTimeStamp VehicleTimeStamp;
+	FVehicleInput VehicleInput;
+
+	FTransform VehicleTransform;
+
+	FWheelPhysicState WheelState_FL;
+	FWheelPhysicState WheelState_FR;
+	FWheelPhysicState WheelState_RL;
+	FWheelPhysicState WheelState_RR;
+
+	bool operator<(FVehicleState R)
+	{
+		return this->VehicleTimeStamp.FrameIndex < R.VehicleTimeStamp.FrameIndex;
+	}
+
+	bool operator>(const FVehicleState& R)
+	{
+		return this->VehicleTimeStamp.FrameIndex > R.VehicleTimeStamp.FrameIndex;
+	}
+
+	bool IsInDisync(const FVehicleState& R, float MaxLocationError)
+	{
+		return FVector::Distance(this->VehicleTransform.GetLocation(), R.VehicleTransform.GetLocation()) > MaxLocationError;
+	}
+};
+
+
 /**
  * 
  */
@@ -21,15 +79,27 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(Server, Unreliable)
+	void SendVehiclePhyiscStateToServer(const FVehicleState& State);
+
+	UFUNCTION(Client, Unreliable)
+	void SendVehiclePhyiscStateToClient(const FVehicleState& State);
+
 	/* cm/s */
 	UFUNCTION(BlueprintPure, Category = BulletVehicle)
 	FVector GetBulletVehicleVelocity();
 
 
-	UFUNCTION(BlueprintCallable, Category = Network)
-	void AddInputBuffer(FVector2D Input);
+	void AddStateBuffer(const FVehicleState& State);
 
-	FVector2D ConsumeInputBuffer();
+	FVehicleState ConsumeStateBuffer();
+
+	FVehicleState GetVehiclePhysicState(float DeltaTime);
+
+
+	void ValidateAndSortVehicleState();
+
+	void DoCorrection();
 
 protected:
 
@@ -58,20 +128,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Engine")
 	float TopSpeed = 200000.0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category="Network")
-	int32 PlayerIndex = 0;
-
-	UPROPERTY(EditAnywhere, Replicated, Category="Network")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D VehicleInput;
 
-	UPROPERTY(EditAnywhere, Replicated, Category="Network")
-	FVector2D VehicleBufferedInput = FVector2D::ZeroVector;
+	UPROPERTY(EditAnywhere, Category="Network")
+	FVehicleState VehicleBufferedState;
 
-	UPROPERTY(EditAnywhere, Replicated, Category="Network")
-	FTransform RemoteTransform;
-
-	TQueue<FVector2D> MovementInputBuffer;
-	int32 MovementInputBufferLength = 0;
+	TQueue<FVehicleState> VehicleStateBuffer;
+	int32 VehicleStateBufferLength = 0;
+	uint64 FrameIndex = 0;
 
 	UPROPERTY(EditAnywhere, Category="Network")
 	float MaxLocaionErrorTreshold = 100.0f;
